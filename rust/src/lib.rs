@@ -1,7 +1,9 @@
 use godot::prelude::*;
 
-mod player;
 mod shared;
+
+mod npc;
+mod player;
 
 struct GameExtension;
 

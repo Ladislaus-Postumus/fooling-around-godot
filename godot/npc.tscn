@@ -1,7 +1,5 @@
 [gd_scene format=3 uid="uid://bw7hruyb68ekx"]
 
-[ext_resource type="Script" uid="uid://dvsro4enmpbjf" path="res://npc.gd" id="1_ideak"]
-
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_v7lw1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v7lw1"]
@@ -13,8 +11,7 @@ size = Vector3(0.3, 0.3, 0.3)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kh24r"]
 
-[node name="Npc" type="CharacterBody3D" unique_id=1823386762]
-script = ExtResource("1_ideak")
+[node name="Npc" type="Npc" unique_id=123816284]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1895864600]
 mesh = SubResource("CapsuleMesh_v7lw1")

@@ -8,6 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 godot = "0.4"
+rand = "0.10.3"
 
 [profile.dev]
 opt-level = 1 # gdext debug builds are notoriously slow at opt-level 0
