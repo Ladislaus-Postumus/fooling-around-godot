@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bw7hruyb68ekx"]
+
+[ext_resource type="Script" uid="uid://dvsro4enmpbjf" path="res://npc.gd" id="1_ideak"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_v7lw1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v7lw1"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xxcha"]
+material = SubResource("StandardMaterial3D_v7lw1")
+size = Vector3(0.3, 0.3, 0.3)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kh24r"]
+
+[node name="Npc" type="CharacterBody3D" unique_id=1823386762]
+script = ExtResource("1_ideak")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1895864600]
+mesh = SubResource("CapsuleMesh_v7lw1")
+
+[node name="Head" type="MeshInstance3D" parent="MeshInstance3D" unique_id=2017237938]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.25)
+mesh = SubResource("BoxMesh_xxcha")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=476922189]
+shape = SubResource("CapsuleShape3D_kh24r")

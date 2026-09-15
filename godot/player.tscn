@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://cr5wdlxbkbvij"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sh265"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sh265"]
+albedo_color = Color(0.14509805, 0.5137255, 1, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4flbx"]
+material = SubResource("StandardMaterial3D_sh265")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ideak"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_onrkg"]
+material = SubResource("StandardMaterial3D_ideak")
+size = Vector3(0.3, 0.3, 0.3)
+
+[node name="Player" type="Player" unique_id=1686585013]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=735566228]
+shape = SubResource("CapsuleShape3D_sh265")
+
+[node name="Head" type="Node3D" parent="." unique_id=1244310289]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=1800324579]
+cull_mask = 1048573
+current = true
+
+[node name="Model" type="Node3D" parent="." unique_id=1783917913]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Model" unique_id=1694958418]
+mesh = SubResource("CapsuleMesh_4flbx")
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Model" unique_id=268959629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.25)
+layers = 2
+mesh = SubResource("BoxMesh_onrkg")
