@@ -1,0 +1,6 @@
+rust/target/
+.direnv/
+
+# Godot 4+ specific ignores
+.godot/
+/android/
