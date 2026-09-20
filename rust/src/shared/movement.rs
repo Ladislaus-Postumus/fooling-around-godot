@@ -13,16 +13,22 @@ pub struct MovementCharacter {
 }
 
 impl MovementCharacter {
-    pub fn apply_acceleration(&mut self, delta: f32) -> &mut Self {
+    pub fn apply_acceleration(&mut self, _delta: f32) -> &mut Self {
         let target = self.intent.direction * self.intent.speed.0;
-        self.current_velocity = self
-            .current_velocity
+        let horizontal = Vector3::new(self.current_velocity.x, 0.0, self.current_velocity.z)
             .move_toward(target, self.intent.speed.0);
+        self.current_velocity.x = horizontal.x;
+        self.current_velocity.z = horizontal.z;
         self
     }
 
     pub fn apply_gravity(&mut self, gravity: Vector3, delta: f32) -> &mut Self {
         self.current_velocity += gravity * delta;
+        self
+    }
+
+    pub fn jump(&mut self, jump_velocity: f32) -> &mut Self {
+        self.current_velocity.y = jump_velocity;
         self
     }
 

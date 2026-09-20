@@ -11,10 +11,6 @@ struct Player {
     #[init(val = Speed::WALK)]
     speed: Speed,
 
-    #[export]
-    #[init(val = 75.0)]
-    fall_acceleration: f32,
-
     #[init(val = 4.5)]
     jump_velocity: f32,
 
@@ -40,8 +36,16 @@ impl ICharacterBody3D for Player {
             Vector3::ZERO
         };
 
-        if input.is_action_just_pressed("jump") && self.base().is_on_floor() {
-            gravity.y += self.jump_velocity;
+        if (input.is_action_pressed("sneak") && self.speed == Speed::SNEAK)
+            || (input.is_action_pressed("sprint") && self.speed == Speed::RUN)
+        {
+            self.speed = Speed::WALK;
+        }
+        if input.is_action_pressed("sneak") {
+            self.speed = Speed::SNEAK;
+        }
+        if input.is_action_pressed("sprint") {
+            self.speed = Speed::RUN;
         }
 
         let input_dir = input.get_vector("move_left", "move_right", "move_up", "move_down");
@@ -53,10 +57,14 @@ impl ICharacterBody3D for Player {
             Vector3::ZERO
         };
 
-        let movement =
-            MovementCharacter::from_input(self.speed, direction, gravity, delta, &*self.base_mut());
-        movement.apply_to(&mut *self.base_mut());
+        let mut movement =
+            MovementCharacter::from_input(self.speed, direction, gravity, delta, &self.base_mut());
 
+        if input.is_action_just_pressed("jump") && self.base().is_on_floor() {
+            movement.jump(self.jump_velocity);
+        }
+
+        movement.apply_to(&mut self.base_mut());
         self.base_mut().move_and_slide();
     }
 
