@@ -13,6 +13,7 @@
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
         cargo
+        cargo-watch
         rustc
         rustfmt
         clippy
