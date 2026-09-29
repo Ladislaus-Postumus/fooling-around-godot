@@ -12,6 +12,8 @@ size = Vector3(0.3, 0.3, 0.3)
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kh24r"]
 
 [node name="Npc" type="Npc" unique_id=123816284]
+collision_layer = 4
+collision_mask = 3
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1895864600]
 mesh = SubResource("CapsuleMesh_v7lw1")

@@ -18,7 +18,7 @@ enum NpcState {
 
 #[derive(GodotClass)]
 #[class(init, base=CharacterBody3D)]
-struct Npc {
+pub struct Npc {
     base: Base<CharacterBody3D>,
 
     #[init(val = Speed::WALK)]
@@ -35,6 +35,9 @@ struct Npc {
 
     #[init(val = BoundingBox { min: Vector3::new(-30.0, 0.0, -30.0), max: Vector3::new(30.0, 0.0, 30.0) })]
     patrol_area: BoundingBox,
+
+    #[init(val = Vector3::ZERO)]
+    knockback: Vector3,
 }
 
 #[godot_api]
@@ -58,6 +61,11 @@ impl ICharacterBody3D for Npc {
 }
 
 impl Npc {
+    pub fn apply_knockback(&mut self, knockback: Vector3) {
+        godot_print!("add knockback");
+        self.knockback += knockback;
+    }
+
     fn do_move(&mut self, target: Vector3, delta: f32) {
         // find direction to move in
         let current_pos = self.base().get_global_position();
@@ -82,8 +90,17 @@ impl Npc {
             Vector3::ZERO
         };
 
-        MovementCharacter::from_input(self.speed, direction, gravity, delta, &self.base())
-            .apply_to(&mut self.base_mut());
+        let mut movement =
+            MovementCharacter::from_input(self.speed, direction, gravity, delta, &self.base());
+        movement.current_velocity += self.knockback;
+        movement.apply_to(&mut self.base_mut());
+        godot_print!(
+            "knockback applied {}  {}",
+            self.base().get_velocity(),
+            movement.current_velocity
+        );
+        self.knockback = self.knockback.move_toward(Vector3::ZERO, 1.0);
+
         self.base_mut().move_and_slide();
     }
 

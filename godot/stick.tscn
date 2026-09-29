@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://cf51tsdwwdqil"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfe5"]
+radius = 0.063
+height = 1.5
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_va7af"]
+radius = 0.063
+height = 1.5
+
+[node name="Stick" type="Stick" unique_id=631373672]
+
+[node name="CollisionArea" type="Area3D" parent="." unique_id=1640956890]
+collision_layer = 2
+collision_mask = 4
+monitoring = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CollisionArea" unique_id=464980621]
+transform = Transform3D(1, 2.9802322e-08, -5.9604645e-08, 0, 0.99999994, 0, -2.9802322e-08, 5.9604645e-08, 1, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_agfe5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionArea" unique_id=1837314094]
+transform = Transform3D(1, 2.9802322e-08, -5.9604645e-08, 0, 0.99999994, 0, -2.9802322e-08, 5.9604645e-08, 1, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_va7af")
