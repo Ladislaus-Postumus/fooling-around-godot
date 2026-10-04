@@ -53,18 +53,16 @@ impl ICharacterBody3D for Player {
             Vector3::ZERO
         };
 
-        if input.is_action_pressed("sneak") && self.speed == Speed::WALK {
+        if input.is_action_just_pressed("sneak") && self.speed == Speed::WALK {
             self.speed = Speed::SNEAK;
-        }
-        if input.is_action_pressed("sprint") && self.speed == Speed::WALK {
+        } else if input.is_action_just_pressed("sprint") && self.speed == Speed::WALK {
             self.speed = Speed::RUN;
+        } else if (input.is_action_just_pressed("sneak") && self.speed == Speed::SNEAK)
+            || (input.is_action_just_pressed("sprint") && self.speed == Speed::RUN)
+        {
+            self.speed = Speed::WALK;
         }
-        //        if (input.is_action_pressed("sneak") && self.speed == Speed::SNEAK)
-        //            || (input.is_action_pressed("sprint") && self.speed == Speed::RUN)
-        //        {
-        //            self.speed = Speed::WALK;
-        //        }
-        //
+
         let input_dir = input.get_vector("move_left", "move_right", "move_up", "move_down");
         let raw_direction =
             self.base().get_transform().basis * Vector3::new(input_dir.x, 0.0, input_dir.y);

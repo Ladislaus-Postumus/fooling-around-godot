@@ -62,7 +62,6 @@ impl ICharacterBody3D for Npc {
 
 impl Npc {
     pub fn apply_knockback(&mut self, knockback: Vector3) {
-        godot_print!("add knockback");
         self.knockback += knockback;
     }
 
@@ -94,11 +93,6 @@ impl Npc {
             MovementCharacter::from_input(self.speed, direction, gravity, delta, &self.base());
         movement.current_velocity += self.knockback;
         movement.apply_to(&mut self.base_mut());
-        godot_print!(
-            "knockback applied {}  {}",
-            self.base().get_velocity(),
-            movement.current_velocity
-        );
         self.knockback = self.knockback.move_toward(Vector3::ZERO, 1.0);
 
         self.base_mut().move_and_slide();
