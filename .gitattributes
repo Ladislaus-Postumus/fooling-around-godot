@@ -10,3 +10,4 @@
 *.ogg binary
 *.wav binary
 *.glb binary
+*.res binary

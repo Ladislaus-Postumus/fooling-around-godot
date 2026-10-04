@@ -1,5 +1,7 @@
 rust/target/
 .direnv/
+godot/demo/
+godot/addons/
 
 # Godot 4+ specific ignores
 .godot/
