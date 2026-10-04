@@ -56,7 +56,7 @@ impl ICharacterBody3D for Npc {
                 }
             }
             NpcState::Alert(_instance) => todo!(),
-        };
+        }
     }
 }
 
@@ -83,10 +83,10 @@ impl Npc {
         }
 
         // move npc
-        let gravity = if !self.base().is_on_floor() {
-            self.base().get_gravity()
-        } else {
+        let gravity = if self.base().is_on_floor() {
             Vector3::ZERO
+        } else {
+            self.base().get_gravity()
         };
 
         let mut movement =

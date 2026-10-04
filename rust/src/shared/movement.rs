@@ -27,7 +27,7 @@ impl MovementCharacter {
         self
     }
 
-    pub fn jump(&mut self, jump_velocity: f32) -> &mut Self {
+    pub const fn jump(&mut self, jump_velocity: f32) -> &mut Self {
         self.current_velocity.y = jump_velocity;
         self
     }

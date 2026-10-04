@@ -47,10 +47,10 @@ impl ICharacterBody3D for Player {
         let delta = delta as f32;
         let input = Input::singleton();
 
-        let gravity = if !self.base().is_on_floor() {
-            self.base().get_gravity()
-        } else {
+        let gravity = if self.base().is_on_floor() {
             Vector3::ZERO
+        } else {
+            self.base().get_gravity()
         };
 
         if input.is_action_just_pressed("sneak") && self.speed == Speed::WALK {
@@ -66,10 +66,10 @@ impl ICharacterBody3D for Player {
         let input_dir = input.get_vector("move_left", "move_right", "move_up", "move_down");
         let raw_direction =
             self.base().get_transform().basis * Vector3::new(input_dir.x, 0.0, input_dir.y);
-        let direction = if raw_direction != Vector3::ZERO {
-            raw_direction.normalized()
-        } else {
+        let direction = if raw_direction == Vector3::ZERO {
             Vector3::ZERO
+        } else {
+            raw_direction.normalized()
         };
 
         let mut movement =
