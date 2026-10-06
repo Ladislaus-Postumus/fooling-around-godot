@@ -24,3 +24,6 @@ mesh = SubResource("BoxMesh_xxcha")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=476922189]
 shape = SubResource("CapsuleShape3D_kh24r")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1458713281]
+path_height_offset = -1.0

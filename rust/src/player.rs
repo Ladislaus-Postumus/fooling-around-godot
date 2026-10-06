@@ -44,6 +44,7 @@ impl ICharacterBody3D for Player {
     }
 
     fn physics_process(&mut self, delta: f64) {
+        #[allow(clippy::cast_possible_truncation)]
         let delta = delta as f32;
         let input = Input::singleton();
 
@@ -108,6 +109,7 @@ impl ICharacterBody3D for Player {
         }
     }
 }
+
 impl Player {
     fn on_hit(&mut self, body: Gd<Node3D>) {
         if let Ok(mut npc) = body.try_cast::<Npc>() {

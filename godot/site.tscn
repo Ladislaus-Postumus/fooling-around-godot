@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bh3y17djdfwq"]
+
+[ext_resource type="PackedScene" uid="uid://bw7hruyb68ekx" path="res://npc.tscn" id="1_teaa3"]
+[ext_resource type="PackedScene" uid="uid://d4ncgm4vb2wwt" path="res://zone.tscn" id="2_hclia"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vgo5p"]
+resource_local_to_scene = true
+size = Vector3(5, 0.5, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_o0mrl"]
+resource_local_to_scene = true
+size = Vector3(10, 0.5, 25)
+
+[node name="Site" type="Site" unique_id=273699464]
+
+[node name="Npc" parent="." unique_id=123816284 instance=ExtResource("1_teaa3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="Npc2" parent="." unique_id=1525334380 instance=ExtResource("1_teaa3")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+
+[node name="Zone" parent="." unique_id=1413874836 instance=ExtResource("2_hclia")]
+kind = "Relaxing"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 0)
+
+[node name="CollisionShape3D" parent="Zone" index="0" unique_id=1783115774]
+shape = SubResource("BoxShape3D_vgo5p")
+
+[node name="Zone2" parent="." unique_id=671223205 instance=ExtResource("2_hclia")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
+
+[node name="CollisionShape3D" parent="Zone2" index="0" unique_id=1783115774]
+shape = SubResource("BoxShape3D_o0mrl")
+
+[editable path="Zone"]
+[editable path="Zone2"]

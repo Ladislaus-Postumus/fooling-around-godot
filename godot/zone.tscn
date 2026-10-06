@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://d4ncgm4vb2wwt"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ikqn6"]
+resource_local_to_scene = true
+size = Vector3(1, 0.5, 1)
+
+[node name="Zone" type="Zone" unique_id=1413874836]
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1783115774]
+shape = SubResource("BoxShape3D_ikqn6")
+debug_color = Color(1, 0.39215687, 0.38039216, 0.41960785)

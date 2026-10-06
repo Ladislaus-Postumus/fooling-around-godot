@@ -4,7 +4,9 @@ mod shared;
 
 mod npc;
 mod player;
+mod site;
 mod stick;
+mod zone;
 
 struct GameExtension;
 

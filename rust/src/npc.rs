@@ -1,7 +1,10 @@
 use std::f32::consts::PI;
+use std::panic;
 
 use crate::shared::{MovementCharacter, Speed};
-use godot::classes::{CharacterBody3D, ICharacterBody3D};
+use crate::site::Site;
+use crate::zone::ZoneKind;
+use godot::classes::{CharacterBody3D, ICharacterBody3D, NavigationAgent3D, NavigationServer3D};
 use godot::prelude::*;
 use rand::RngExt;
 
@@ -9,10 +12,13 @@ use rand::RngExt;
 #[godot(transparent)]
 struct DurationPaused(f32);
 
+#[derive(Clone, Copy, PartialEq, Debug)]
+struct NextTarget(ZoneKind);
+
 #[derive(Debug)]
 enum NpcState {
     Moving(Vector3),
-    Paused(DurationPaused),
+    Paused(DurationPaused, NextTarget),
     Alert(InstanceId),
 }
 
@@ -24,7 +30,7 @@ pub struct Npc {
     #[init(val = Speed::WALK)]
     speed: Speed,
 
-    #[init(val = NpcState::Paused(DurationPaused(3.0)))]
+    #[init(val = NpcState::Paused(DurationPaused(3.0), NextTarget(ZoneKind::Patrol)))]
     state: NpcState,
 
     #[init(val = 0.0)]
@@ -33,25 +39,38 @@ pub struct Npc {
     #[init(val = rand::rng())]
     rng: rand::rngs::ThreadRng,
 
-    #[init(val = BoundingBox { min: Vector3::new(-30.0, 0.0, -30.0), max: Vector3::new(30.0, 0.0, 30.0) })]
-    patrol_area: BoundingBox,
-
     #[init(val = Vector3::ZERO)]
     knockback: Vector3,
+
+    #[init(node = "NavigationAgent3D")]
+    agent: OnReady<Gd<NavigationAgent3D>>,
+
+    home: Option<Gd<Site>>,
 }
 
 #[godot_api]
 impl ICharacterBody3D for Npc {
+    fn ready(&mut self) {
+        self.home = self.find_site();
+        if self.home.is_none() {
+            godot_warn!("Npc `{}` is not below a Site", self.base().get_path());
+        }
+    }
+
     fn physics_process(&mut self, delta: f64) {
+        #[allow(clippy::cast_possible_truncation)]
         let delta = delta as f32;
         match self.state {
-            NpcState::Moving(target) => {
-                self.do_move(target, delta);
+            NpcState::Moving(_) => {
+                self.do_move(delta);
             }
-            NpcState::Paused(duration) => {
+            NpcState::Paused(duration, next_target) => {
                 self.elapsed += delta;
                 if self.elapsed >= duration.0 {
-                    self.state = NpcState::Moving(self.patrol_area.random_point(&mut self.rng));
+                    if let Some(target) = self.pick_target(next_target.0) {
+                        self.agent.set_target_position(target);
+                        self.state = NpcState::Moving(target);
+                    }
                     self.elapsed = 0.0;
                 }
             }
@@ -65,20 +84,35 @@ impl Npc {
         self.knockback += knockback;
     }
 
-    fn do_move(&mut self, target: Vector3, delta: f32) {
+    fn do_move(&mut self, delta: f32) {
         // find direction to move in
-        let current_pos = self.base().get_global_position();
-        let to_target = target - current_pos;
-        let direction = if to_target.length() >= 0.3 {
-            to_target.normalized()
-        } else {
-            self.state = NpcState::Paused(DurationPaused(self.rng.random_range(0.0..5.0)));
+        let direction = if self.agent.is_navigation_finished() {
+            match self.rng.random_range(0..=1) {
+                0 => {
+                    self.state = NpcState::Paused(
+                        DurationPaused(self.rng.random_range(3.0..10.0)),
+                        NextTarget(ZoneKind::Patrol),
+                    );
+                }
+                1 => {
+                    self.state = NpcState::Paused(
+                        DurationPaused(self.rng.random_range(0.0..5.0)),
+                        NextTarget(ZoneKind::Relaxing),
+                    );
+                }
+                _ => {
+                    (); // pass, can't happen due to rng range
+                }
+            }
             Vector3::ZERO
+        } else {
+            let to_next = self.agent.get_next_path_position() - self.base().get_global_position();
+            Vector3::new(to_next.x, 0.0, to_next.z).normalized_or_zero()
         };
 
         // rotate npc
         if direction != Vector3::ZERO {
-            let target_y_rotation = direction.x.atan2(direction.z);
+            let target_y_rotation = (-direction.x).atan2(-direction.z);
             self.rotate_towards_y(target_y_rotation, delta);
         }
 
@@ -100,29 +134,27 @@ impl Npc {
 
     fn rotate_towards_y(&mut self, angle: f32, delta: f32) {
         let current_rotation = self.base().get_rotation().y;
-        let mut diff = current_rotation - angle;
+        let mut diff = angle - current_rotation;
         diff = (diff + PI).rem_euclid(2.0 * PI) - PI;
         let max_step = Speed::TURN.0 * delta;
         let step = diff.clamp(-max_step, max_step);
         self.base_mut().rotate_y(step);
     }
-}
 
-trait PatrolArea {
-    fn random_point(&self, rng: &mut impl RngExt) -> Vector3;
-}
+    fn find_site(&self) -> Option<Gd<Site>> {
+        let mut node = self.base().get_parent();
+        while let Some(current) = node {
+            match current.try_cast::<Site>() {
+                Ok(site) => return Some(site),
+                Err(other) => node = other.get_parent(),
+            }
+        }
+        None
+    }
 
-struct BoundingBox {
-    min: Vector3,
-    max: Vector3,
-}
-
-impl PatrolArea for BoundingBox {
-    fn random_point(&self, rng: &mut impl RngExt) -> Vector3 {
-        Vector3::new(
-            rng.random_range(self.min.x..self.max.x),
-            0.0, //rng.random_range(self.min.y..self.max.y),
-            rng.random_range(self.min.z..self.max.z),
-        )
+    fn pick_target(&mut self, kind: ZoneKind) -> Option<Vector3> {
+        let site = self.home.as_ref()?;
+        let map = self.agent.get_navigation_map();
+        site.bind().random_target(kind, &mut self.rng, map)
     }
 }
